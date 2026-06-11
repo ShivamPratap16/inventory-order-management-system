@@ -948,7 +948,10 @@ h3 {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 .btn--primary:hover {
-  filter: brightness(1.05);
+  /* Re-declare the gradient: .btn:hover (specificity 0,2,0) would otherwise
+     override .btn--primary's background (0,1,0) and paint the button white. */
+  background: var(--gradient);
+  filter: brightness(1.08);
   box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
   transform: translateY(-1px);
 }
