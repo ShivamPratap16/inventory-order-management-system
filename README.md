@@ -13,6 +13,12 @@
 
 [Features](#-features) · [Quick Start](#-quick-start-docker) · [API Reference](#-api-reference) · [Architecture](#-architecture) · [Business Rules](#-business-rules) · [Deployment](#-deployment)
 
+### 🔗 Live Demo
+
+**[▶ Open the App](https://inventory-order-management-system-ochre.vercel.app)** &nbsp;·&nbsp; **[⚙️ API Docs (Swagger)](https://inventory-order-management-system-oc5l.onrender.com/docs)**
+
+> ⏳ The backend is on a free tier and sleeps after inactivity — the first request may take ~50s to wake, then it's instant.
+
 </div>
 
 ---
@@ -75,8 +81,8 @@
 
 ```bash
 # 1. Clone and enter the project
-git clone <your-repo-url>
-cd inventory-order-system
+git clone https://github.com/ShivamPratap16/inventory-order-management-system.git
+cd inventory-order-management-system
 
 # 2. Create your environment file (edit credentials if you like)
 cp .env.example .env
@@ -276,15 +282,16 @@ All configuration is environment-driven — **no credentials in source**. See `.
 
 | | URL |
 |---|---|
-| 🌐 Frontend | _coming soon_ |
-| ⚙️ Backend API | _coming soon_ |
-| 🐳 Docker Hub (backend) | _coming soon_ |
+| 🌐 Frontend (Vercel) | https://inventory-order-management-system-ochre.vercel.app |
+| ⚙️ Backend API (Render) | https://inventory-order-management-system-oc5l.onrender.com |
+| 📚 API Docs | https://inventory-order-management-system-oc5l.onrender.com/docs |
+| 🐳 Docker Hub (backend) | https://hub.docker.com/r/shivampratap16/inventory-backend |
 
 Push the backend image to Docker Hub:
 
 ```bash
-docker build -t <dockerhub-username>/inventory-backend:latest ./backend
-docker push <dockerhub-username>/inventory-backend:latest
+docker build --platform linux/amd64 -t shivampratap16/inventory-backend:latest ./backend
+docker push shivampratap16/inventory-backend:latest
 ```
 
 ---
