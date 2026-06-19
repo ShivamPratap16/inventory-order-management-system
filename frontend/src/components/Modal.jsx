@@ -1,5 +1,3 @@
-// Reusable modal dialog used for create/edit forms and order details.
-// Clicking the dark backdrop or the close button dismisses it.
 import { IconClose } from "./Icons.jsx";
 
 export default function Modal({ open, title, onClose, children }) {

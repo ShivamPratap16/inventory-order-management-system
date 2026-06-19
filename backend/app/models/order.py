@@ -23,7 +23,6 @@ class Order(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     customer: Mapped["Customer"] = relationship(back_populates="orders")
-    # Deleting an order removes its line items automatically.
     items: Mapped[list["OrderItem"]] = relationship(
         back_populates="order", cascade="all, delete-orphan"
     )
@@ -36,8 +35,6 @@ class OrderItem(Base):
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), nullable=False)
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    # Price per unit captured at purchase time, so later price changes to the
-    # product do not rewrite the history of past orders.
     unit_price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
 
     __table_args__ = (

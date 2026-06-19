@@ -6,8 +6,6 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.config import settings
 
-# pool_pre_ping avoids "server closed the connection" errors after the DB has
-# been idle - useful on free hosting tiers that drop idle connections.
 engine = create_engine(settings.database_url, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

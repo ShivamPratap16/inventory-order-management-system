@@ -50,20 +50,10 @@ def create_order(payload: schemas.OrderCreate, db: Session = Depends(get_db)):
     if customer is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Customer not found")
 
-    # Combine duplicate product lines so ordering the same product twice in one
-    # request is treated as a single larger quantity.
     requested = defaultdict(int)
     for line in payload.items:
         requested[line.product_id] += line.quantity
 
-    # Lock the product rows FOR UPDATE before reading their stock. This is what
-    # prevents overselling under concurrency: if two orders race for the same
-    # product, the second one blocks here until the first commits, then reads
-    # the already-reduced stock and is correctly rejected.
-    #
-    # We always lock in ascending id order (sorted ids + ORDER BY) so that two
-    # multi-product orders can never grab the same rows in opposite order and
-    # deadlock each other.
     product_ids = sorted(requested.keys())
     locked_products = (
         db.query(models.Product)
@@ -74,7 +64,6 @@ def create_order(payload: schemas.OrderCreate, db: Session = Depends(get_db)):
     )
     products_by_id = {p.id: p for p in locked_products}
 
-    # Any requested id that did not come back simply does not exist.
     missing = [pid for pid in product_ids if pid not in products_by_id]
     if missing:
         raise HTTPException(
@@ -89,8 +78,6 @@ def create_order(payload: schemas.OrderCreate, db: Session = Depends(get_db)):
         quantity = requested[product_id]
         product = products_by_id[product_id]
 
-        # Business rule: reject the order if stock is insufficient. Because the
-        # row is locked, this stock value cannot change under us before commit.
         if product.quantity_in_stock < quantity:
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST,
@@ -100,7 +87,6 @@ def create_order(payload: schemas.OrderCreate, db: Session = Depends(get_db)):
                 ),
             )
 
-        # Reduce stock and record the line at the current price.
         product.quantity_in_stock -= quantity
         line_price = float(product.price)
         total += line_price * quantity
@@ -122,10 +108,7 @@ def list_orders(search: str | None = None, db: Session = Depends(get_db)):
     query = db.query(models.Order)
     if search and search.strip():
         term = search.strip()
-        # Match the customer's name (join to customers)...
         conditions = [models.Customer.full_name.ilike(f"%{term}%")]
-        # ...and, if the term looks like an order number ("3" or "#3"),
-        # match the order id exactly too.
         digits = term.lstrip("#")
         if digits.isdigit():
             conditions.append(models.Order.id == int(digits))
@@ -148,7 +131,6 @@ def delete_order(order_id: int, db: Session = Depends(get_db)):
     if order is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Order not found")
 
-    # Cancelling an order returns its items to stock so inventory stays correct.
     for item in order.items:
         product = db.get(models.Product, item.product_id)
         if product is not None:

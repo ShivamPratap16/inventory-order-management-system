@@ -1,15 +1,11 @@
-// Shared product-filter helpers, used by both the Products page and the
-// Dashboard low-stock table so the filter shape and query-building logic live
-// in exactly one place.
 
-// The empty/initial filter state.
 export const emptyFilters = {
-  stock_status: [], // array of "out" | "low" | "healthy"
+  stock_status: [],
   min_price: "",
   max_price: "",
   min_stock: "",
   max_stock: "",
-  sort: "", // "" = backend default (newest first)
+  sort: "",
 };
 
 export const STOCK_STATUS_OPTIONS = [
@@ -28,8 +24,6 @@ export const SORT_OPTIONS = [
   { value: "name_desc", label: "Name: Z to A" },
 ];
 
-// Turn filter state (+ optional search term) into a query-param object for axios.
-// Only non-empty values are included, so we never send blank params.
 export function buildProductParams(filters, search = "") {
   const params = {};
   if (search && search.trim()) params.search = search.trim();
@@ -42,19 +36,14 @@ export function buildProductParams(filters, search = "") {
   return params;
 }
 
-// A human-readable heading describing the current stock-status selection, so a
-// section title never claims "Low Stock" while showing healthy items.
 export function stockSectionTitle(filters) {
   const set = new Set(filters.stock_status);
   if (set.size === 0) return "All Products";
-  // Only out and/or low selected -> the familiar "Low Stock Products".
   if (!set.has("healthy")) return "Low Stock Products";
   const labels = { out: "Out of Stock", low: "Low Stock", healthy: "Healthy" };
   return [...set].map((s) => labels[s]).join(" + ") + " Products";
 }
 
-// How many distinct filters are active (for the "Filters (2)" badge). A price or
-// stock RANGE counts as one filter even if both ends are set.
 export function countActiveFilters(filters) {
   let n = 0;
   if (filters.stock_status.length) n += 1;

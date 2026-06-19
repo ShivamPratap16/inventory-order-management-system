@@ -1,7 +1,3 @@
-// Theme (light/dark) state for the whole app.
-// - The current theme is written to <html data-theme="..."> so CSS can swap
-//   design tokens with a [data-theme="dark"] selector.
-// - The choice persists in localStorage; first visit follows the OS preference.
 import { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext(null);

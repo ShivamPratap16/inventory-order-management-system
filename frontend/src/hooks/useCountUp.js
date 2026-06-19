@@ -1,6 +1,3 @@
-// Animates a number from 0 to `target` over `duration` ms with an ease-out
-// curve, using requestAnimationFrame. Gives dashboard stats a satisfying
-// "counting up" entrance instead of popping in.
 import { useEffect, useState } from "react";
 
 export function useCountUp(target, duration = 700) {
@@ -17,7 +14,6 @@ export function useCountUp(target, duration = 700) {
 
     const tick = (now) => {
       const t = Math.min((now - start) / duration, 1);
-      // easeOutCubic: fast start, gentle landing on the final value.
       const eased = 1 - Math.pow(1 - t, 3);
       setValue(Math.round(end * eased));
       if (t < 1) frame = requestAnimationFrame(tick);

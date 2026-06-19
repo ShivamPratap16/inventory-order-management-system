@@ -25,8 +25,6 @@ class OrderItemOut(BaseModel):
     product_id: int
     quantity: int
     unit_price: float
-    # Convenience field so the frontend can show the product name without an
-    # extra request. Populated from the related product in the router.
     product_name: str | None = None
 
 

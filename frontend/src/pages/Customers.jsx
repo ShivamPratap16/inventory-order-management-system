@@ -1,4 +1,3 @@
-// Customers page: list + add (modal form) + delete, with validation.
 import { useEffect, useState } from "react";
 import { customersApi, extractError } from "../api/client.js";
 import { useToast } from "../components/Toast.jsx";
@@ -43,7 +42,6 @@ export default function Customers() {
   const validate = () => {
     const e = {};
     if (!form.full_name.trim()) e.full_name = "Name is required";
-    // Simple email shape check; the backend validates strictly too.
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email";
     if (!form.phone.trim()) e.phone = "Phone is required";
     setErrors(e);
@@ -80,7 +78,6 @@ export default function Customers() {
 
   const setField = (field) => (ev) => setForm({ ...form, [field]: ev.target.value });
 
-  // A small colored avatar with the person's initials adds visual warmth.
   const initials = (name) =>
     name
       .split(" ")

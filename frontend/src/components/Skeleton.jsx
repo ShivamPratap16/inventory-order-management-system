@@ -1,5 +1,3 @@
-// Shimmering placeholder rows shown while data loads - feels far more polished
-// than a "Loading..." string and prevents layout jump.
 export function SkeletonTable({ rows = 5, cols = 4 }) {
   return (
     <div className="table-wrap">

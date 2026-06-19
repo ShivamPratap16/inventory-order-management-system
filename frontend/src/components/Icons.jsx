@@ -1,5 +1,3 @@
-// Small set of inline SVG icons (Lucide-style, stroke = currentColor) so the UI
-// has crisp, consistent iconography with no extra dependency.
 const base = {
   width: 20,
   height: 20,

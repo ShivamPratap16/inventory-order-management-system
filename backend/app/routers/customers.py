@@ -17,7 +17,6 @@ def _get_customer_or_404(customer_id: int, db: Session) -> models.Customer:
 
 @router.post("", response_model=schemas.CustomerOut, status_code=status.HTTP_201_CREATED)
 def create_customer(payload: schemas.CustomerCreate, db: Session = Depends(get_db)):
-    # Business rule: email must be unique across all customers.
     existing = (
         db.query(models.Customer).filter(models.Customer.email == payload.email).first()
     )
@@ -36,7 +35,6 @@ def create_customer(payload: schemas.CustomerCreate, db: Session = Depends(get_d
 
 @router.get("", response_model=list[schemas.CustomerOut])
 def list_customers(search: str | None = None, db: Session = Depends(get_db)):
-    # Optional case-insensitive search across name, email and phone.
     query = db.query(models.Customer)
     if search and search.strip():
         term = f"%{search.strip()}%"

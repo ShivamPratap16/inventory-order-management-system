@@ -9,8 +9,6 @@ from app.database import get_db
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
-# Maps the `sort` query value to a SQLAlchemy ORDER BY expression. Anything not
-# in this map falls back to newest-first.
 _SORT_OPTIONS = {
     "stock_asc": models.Product.quantity_in_stock.asc(),
     "stock_desc": models.Product.quantity_in_stock.desc(),
@@ -30,8 +28,6 @@ def _get_product_or_404(product_id: int, db: Session) -> models.Product:
 
 @router.post("", response_model=schemas.ProductOut, status_code=status.HTTP_201_CREATED)
 def create_product(payload: schemas.ProductCreate, db: Session = Depends(get_db)):
-    # Business rule: SKU must be unique. Check before insert to return a clean
-    # 409 instead of leaking a raw database integrity error.
     existing = db.query(models.Product).filter(models.Product.sku == payload.sku).first()
     if existing:
         raise HTTPException(
@@ -49,7 +45,6 @@ def create_product(payload: schemas.ProductCreate, db: Session = Depends(get_db)
 @router.get("", response_model=list[schemas.ProductOut])
 def list_products(
     search: str | None = None,
-    # Comma-separated subset of: out, low, healthy (e.g. "out,low").
     stock_status: str | None = None,
     min_price: float | None = Query(None, ge=0),
     max_price: float | None = Query(None, ge=0),
@@ -66,14 +61,12 @@ def list_products(
     """
     query = db.query(models.Product)
 
-    # --- Search: name or SKU, case-insensitive ---
     if search and search.strip():
         term = f"%{search.strip()}%"
         query = query.filter(
             models.Product.name.ilike(term) | models.Product.sku.ilike(term)
         )
 
-    # --- Stock status buckets (OR within the group) ---
     if stock_status:
         threshold = settings.low_stock_threshold
         wanted = {s.strip() for s in stock_status.split(",") if s.strip()}
@@ -89,19 +82,16 @@ def list_products(
         if conditions:
             query = query.filter(or_(*conditions))
 
-    # --- Price range ---
     if min_price is not None:
         query = query.filter(models.Product.price >= min_price)
     if max_price is not None:
         query = query.filter(models.Product.price <= max_price)
 
-    # --- Stock quantity range ---
     if min_stock is not None:
         query = query.filter(models.Product.quantity_in_stock >= min_stock)
     if max_stock is not None:
         query = query.filter(models.Product.quantity_in_stock <= max_stock)
 
-    # --- Sort (defaults to newest first) ---
     query = query.order_by(_SORT_OPTIONS.get(sort, models.Product.id.desc()))
 
     return query.all()
@@ -119,7 +109,6 @@ def update_product(
     product = _get_product_or_404(product_id, db)
     data = payload.model_dump(exclude_unset=True)
 
-    # If the SKU is changing, make sure it does not collide with another product.
     if "sku" in data and data["sku"] != product.sku:
         clash = (
             db.query(models.Product)
@@ -143,8 +132,6 @@ def update_product(
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     product = _get_product_or_404(product_id, db)
-    # Block deletion if the product is referenced by any order, otherwise order
-    # history would point at a missing product.
     if product.order_items:
         raise HTTPException(
             status.HTTP_409_CONFLICT,

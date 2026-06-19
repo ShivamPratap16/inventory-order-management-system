@@ -1,8 +1,6 @@
 """Dashboard summary + analytics schemas."""
 from pydantic import BaseModel
 
-# Unlike SQLAlchemy relationships (which resolve by string name), Pydantic needs
-# the actual ProductOut class to build the nested model - so we import it here.
 from app.schemas.product import ProductOut
 
 
@@ -14,9 +12,8 @@ class DashboardStats(BaseModel):
     low_stock_products: list[ProductOut]
 
 
-# --------------------------- Analytics (charts) ---------------------------
 class OrdersPerDay(BaseModel):
-    date: str  # ISO date, e.g. "2026-06-11"
+    date: str
     orders: int
     revenue: float
 
@@ -27,9 +24,9 @@ class TopProduct(BaseModel):
 
 
 class StockBreakdown(BaseModel):
-    healthy: int  # above the low-stock threshold
-    low: int  # at or below threshold but still > 0
-    out: int  # zero stock
+    healthy: int
+    low: int
+    out: int
 
 
 class DashboardAnalytics(BaseModel):

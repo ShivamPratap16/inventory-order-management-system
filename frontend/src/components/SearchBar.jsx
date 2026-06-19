@@ -1,5 +1,3 @@
-// Reusable search input with a leading icon and a clear button.
-// Controlled component: the parent owns the query string and does the filtering.
 import { IconSearch, IconClose } from "./Icons.jsx";
 
 export default function SearchBar({ value, onChange, placeholder = "Search…" }) {

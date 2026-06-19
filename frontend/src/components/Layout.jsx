@@ -1,6 +1,3 @@
-// App shell: a dark full-height sidebar + light content area (the classic
-// professional dashboard pattern). On mobile the sidebar becomes a horizontal
-// icon bar at the top (handled in CSS).
 import { NavLink, Outlet } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext.jsx";
 import {

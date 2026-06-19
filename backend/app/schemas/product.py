@@ -16,7 +16,6 @@ class ProductCreate(ProductBase):
 
 
 class ProductUpdate(BaseModel):
-    # All optional so the client can update only the fields that changed.
     name: str | None = Field(None, min_length=1, max_length=255)
     sku: str | None = Field(None, min_length=1, max_length=100)
     price: float | None = Field(None, ge=0)

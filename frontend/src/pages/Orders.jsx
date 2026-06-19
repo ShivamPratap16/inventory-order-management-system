@@ -1,4 +1,3 @@
-// Orders page: list orders, build a new multi-line order, view details, delete.
 import { useEffect, useMemo, useState } from "react";
 import {
   ordersApi,
@@ -21,7 +20,6 @@ export default function Orders() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [customerId, setCustomerId] = useState("");
-  // Each line: { product_id, quantity }
   const [lines, setLines] = useState([{ product_id: "", quantity: 1 }]);
   const [formError, setFormError] = useState("");
 
@@ -31,7 +29,6 @@ export default function Orders() {
 
   const debouncedQuery = useDebounce(query, 300);
 
-  // Orders list is search-filtered by the backend (customer name or order id).
   const loadOrders = (search) => {
     setLoading(true);
     ordersApi
@@ -41,9 +38,6 @@ export default function Orders() {
       .finally(() => setLoading(false));
   };
 
-  // Products + customers are the full reference lists used by the create-order
-  // dropdowns. They don't depend on the search box, so they load once on mount
-  // and refresh after a mutation (an order changes product stock).
   const loadRefData = () => {
     Promise.all([productsApi.list(), customersApi.list()])
       .then(([p, c]) => {
@@ -67,8 +61,6 @@ export default function Orders() {
     return map;
   }, [products]);
 
-  // Live total preview computed on the client. The backend recalculates the
-  // authoritative total - this is just for instant feedback.
   const previewTotal = useMemo(() => {
     return lines.reduce((sum, l) => {
       const p = productById[Number(l.product_id)];
@@ -114,9 +106,8 @@ export default function Orders() {
       toast.success("Order created");
       setCreateOpen(false);
       loadOrders(debouncedQuery);
-      loadRefData(); // stock changed
+      loadRefData();
     } catch (err) {
-      // Surfaces backend errors like "Insufficient stock for ...".
       toast.error(extractError(err));
     }
   };
@@ -127,7 +118,7 @@ export default function Orders() {
       await ordersApi.remove(o.id);
       toast.success("Order cancelled");
       loadOrders(debouncedQuery);
-      loadRefData(); // stock restored
+      loadRefData();
     } catch (err) {
       toast.error(extractError(err));
     }
@@ -250,7 +241,6 @@ export default function Orders() {
         </div>
       )}
 
-      {/* Create order modal */}
       <Modal open={createOpen} title="Create Order" onClose={() => setCreateOpen(false)}>
         <form onSubmit={submit} className="form" noValidate>
           <label className="field">
@@ -329,7 +319,6 @@ export default function Orders() {
         </form>
       </Modal>
 
-      {/* Order detail modal */}
       <Modal
         open={!!detail}
         title={detail ? `Order #${detail.id}` : ""}

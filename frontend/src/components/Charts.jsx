@@ -1,6 +1,3 @@
-// Dashboard charts built with Recharts. Each component takes already-aggregated
-// data from the backend (the SQL GROUP BY work is done server-side) and only
-// concerns itself with presentation.
 import {
   ResponsiveContainer,
   AreaChart,
@@ -20,9 +17,6 @@ import {
 
 import { useTheme } from "../context/ThemeContext.jsx";
 
-// Chart colors that depend on the active theme. Recharts takes explicit color
-// props (it renders SVG attributes, not CSS), so we resolve them from the
-// theme here instead of CSS variables.
 function useChartTheme() {
   const { isDark } = useTheme();
   return {
@@ -155,7 +149,6 @@ export function StockDonut({ breakdown }) {
           {data.map((d) => (
             <Cell key={d.name} fill={d.color} />
           ))}
-          {/* Total product count rendered in the donut's hole */}
           <Label
             content={({ viewBox }) => {
               const { cx, cy } = viewBox;

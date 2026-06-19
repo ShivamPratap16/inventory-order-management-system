@@ -1,5 +1,3 @@
-// Multi-filter modal for products. Edits a local DRAFT copy of the filters so
-// nothing is applied until the user clicks "Apply" (Cancel discards the draft).
 import { useEffect, useState } from "react";
 import Modal from "./Modal.jsx";
 import {
@@ -11,7 +9,6 @@ import {
 export default function FilterModal({ open, value, onApply, onClose }) {
   const [draft, setDraft] = useState(value);
 
-  // Reset the draft to the live filters every time the modal is (re)opened.
   useEffect(() => {
     if (open) setDraft(value);
   }, [open, value]);
@@ -40,7 +37,6 @@ export default function FilterModal({ open, value, onApply, onClose }) {
   return (
     <Modal open={open} title="Filter Products" onClose={onClose}>
       <div className="form">
-        {/* Stock status (multi-select chips) */}
         <div className="field">
           <span>Stock status</span>
           <div className="chip-group">
@@ -60,7 +56,6 @@ export default function FilterModal({ open, value, onApply, onClose }) {
           </div>
         </div>
 
-        {/* Price range */}
         <div className="field">
           <span>Price range</span>
           <div className="range">
@@ -84,7 +79,6 @@ export default function FilterModal({ open, value, onApply, onClose }) {
           </div>
         </div>
 
-        {/* Stock quantity range */}
         <div className="field">
           <span>Stock quantity range</span>
           <div className="range">
@@ -106,7 +100,6 @@ export default function FilterModal({ open, value, onApply, onClose }) {
           </div>
         </div>
 
-        {/* Sort */}
         <label className="field">
           <span>Sort by</span>
           <select value={draft.sort} onChange={(e) => set("sort", e.target.value)}>

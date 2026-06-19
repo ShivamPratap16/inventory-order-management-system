@@ -1,5 +1,3 @@
-// Lightweight toast system via React context, so any component can call
-// useToast().success(...) / .error(...) for clear success & error feedback.
 import { createContext, useCallback, useContext, useState } from "react";
 import { IconCheck, IconClose } from "./Icons.jsx";
 
@@ -18,7 +16,6 @@ export function ToastProvider({ children }) {
     (message, type) => {
       const id = nextId++;
       setToasts((current) => [...current, { id, message, type }]);
-      // Auto-dismiss after 4 seconds.
       setTimeout(() => remove(id), 4000);
     },
     [remove]

@@ -1,4 +1,3 @@
-// Products page: list + add/edit (modal form) + delete, with form validation.
 import { useEffect, useState } from "react";
 import { productsApi, extractError } from "../api/client.js";
 import { useToast } from "../components/Toast.jsx";
@@ -29,12 +28,9 @@ export default function Products() {
   const [filterOpen, setFilterOpen] = useState(false);
   const toast = useToast();
 
-  // The actual term we send to the API - only updates 300ms after the user
-  // stops typing, so one keystroke != one request.
   const debouncedQuery = useDebounce(query, 300);
   const activeFilters = countActiveFilters(filters);
 
-  // Fetch from the backend; the server does the search, filtering and sorting.
   const load = () => {
     setLoading(true);
     productsApi
@@ -44,8 +40,6 @@ export default function Products() {
       .finally(() => setLoading(false));
   };
 
-  // Re-fetch whenever the debounced search term OR the filters change
-  // (also runs on mount).
   useEffect(() => {
     load();
   }, [debouncedQuery, filters]);
@@ -69,8 +63,6 @@ export default function Products() {
     setModalOpen(true);
   };
 
-  // Client-side validation mirrors the backend rules so users get instant
-  // feedback before a request is even sent.
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = "Name is required";
@@ -133,8 +125,6 @@ export default function Products() {
         </button>
       </div>
 
-      {/* Gated on query/filters (not `loading`) so the input keeps focus during
-          a re-fetch triggered by typing. */}
       {(query || activeFilters > 0 || products.length > 0) && (
         <div className="toolbar">
           <SearchBar

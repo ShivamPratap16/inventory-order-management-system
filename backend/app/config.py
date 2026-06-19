@@ -8,15 +8,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # Full SQLAlchemy connection string, e.g.
-    # postgresql+psycopg2://user:pass@host:5432/dbname
     database_url: str
 
-    # Comma-separated list of origins allowed to call the API from the browser.
-    # In production this should be the deployed frontend URL.
     cors_origins: str = "http://localhost:5173,http://localhost:3000"
 
-    # How many units of stock counts as "low" on the dashboard.
     low_stock_threshold: int = 10
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")

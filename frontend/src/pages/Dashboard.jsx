@@ -1,4 +1,3 @@
-// Dashboard: summary cards + charts + a (filterable) table of low-stock products.
 import { useEffect, useState } from "react";
 import { dashboardApi, productsApi, extractError } from "../api/client.js";
 import { useToast } from "../components/Toast.jsx";
@@ -21,8 +20,6 @@ import {
   IconFilter,
 } from "../components/Icons.jsx";
 
-// The low-stock table defaults to showing out-of-stock + low items, sorted by
-// stock ascending. The filter modal lets the user widen or change this.
 const defaultLowStockFilters = {
   ...emptyFilters,
   stock_status: ["out", "low"],
@@ -39,7 +36,6 @@ const cards = [
 const money = (n) =>
   "$" + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-// Stat card with its value animating up from 0 on mount.
 function StatCard({ value, label, Icon, accent }) {
   const display = useCountUp(value);
   return (
@@ -60,8 +56,6 @@ export default function Dashboard() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // The low-stock table fetches products separately so it can be filtered
-  // independently of the cards/charts.
   const [lowStock, setLowStock] = useState([]);
   const [lowLoading, setLowLoading] = useState(true);
   const [lowFilters, setLowFilters] = useState(defaultLowStockFilters);
@@ -71,7 +65,6 @@ export default function Dashboard() {
   const toast = useToast();
 
   useEffect(() => {
-    // Fetch summary counts and chart analytics together.
     Promise.all([dashboardApi.stats(), dashboardApi.analytics()])
       .then(([s, a]) => {
         setStats(s);
@@ -81,7 +74,6 @@ export default function Dashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Re-fetch the low-stock table whenever its filters change.
   useEffect(() => {
     setLowLoading(true);
     productsApi
@@ -101,7 +93,6 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Hero band: greeting + date on the left, headline revenue on the right */}
       <div className="hero">
         <div>
           <p className="hero__date">{today}</p>
@@ -116,7 +107,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ---- Stat cards ---- */}
       {loading ? (
         <SkeletonCards count={4} />
       ) : (
@@ -133,7 +123,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ---- Charts ---- */}
       {loading ? (
         <div className="chart-grid">
           <div className="chart-card">
@@ -182,7 +171,6 @@ export default function Dashboard() {
         )
       )}
 
-      {/* ---- Low stock table (filterable) ---- */}
       <div className="section-head">
         <h2 className="section-title">{stockSectionTitle(lowFilters)}</h2>
         <button className="btn btn--sm" onClick={() => setFilterOpen(true)}>

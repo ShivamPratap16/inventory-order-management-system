@@ -23,7 +23,6 @@ def get_stats(db: Session = Depends(get_db)):
     total_customers = db.query(models.Customer).count()
     total_orders = db.query(models.Order).count()
 
-    # "Low stock" = at or below the configurable threshold.
     low_stock_products = (
         db.query(models.Product)
         .filter(models.Product.quantity_in_stock <= settings.low_stock_threshold)
@@ -42,14 +41,10 @@ def get_stats(db: Session = Depends(get_db)):
 
 @router.get("/analytics", response_model=schemas.DashboardAnalytics)
 def get_analytics(db: Session = Depends(get_db)):
-    # ---- Total revenue across all orders ----
     total_revenue = db.query(
         func.coalesce(func.sum(models.Order.total_amount), 0)
     ).scalar()
 
-    # ---- Orders + revenue per day for the last 7 days ----
-    # Group orders by calendar day in SQL; days with no orders won't appear, so
-    # we fill those gaps with zeros in Python to get a continuous 7-point series.
     today = datetime.utcnow().date()
     start = today - timedelta(days=6)
     rows = (
@@ -71,7 +66,6 @@ def get_analytics(db: Session = Depends(get_db)):
             schemas.OrdersPerDay(date=d, orders=count, revenue=revenue)
         )
 
-    # ---- Top 5 products by units sold (sum of order line quantities) ----
     top_rows = (
         db.query(
             models.Product.name.label("name"),
@@ -87,7 +81,6 @@ def get_analytics(db: Session = Depends(get_db)):
         schemas.TopProduct(name=r.name, units=int(r.units)) for r in top_rows
     ]
 
-    # ---- Stock health breakdown ----
     threshold = settings.low_stock_threshold
     healthy = (
         db.query(models.Product)

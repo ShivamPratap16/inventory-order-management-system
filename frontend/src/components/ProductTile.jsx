@@ -1,6 +1,3 @@
-// Small gradient tile showing a product's initials - gives table rows a visual
-// identity. The gradient is picked deterministically from the product id so a
-// given product always gets the same color.
 export default function ProductTile({ product }) {
   const initials = product.name
     .replace(/[^a-zA-Z0-9 ]/g, "")

@@ -14,9 +14,7 @@ from app.config import settings
 from app.database import Base, engine
 from app.routers import customers, dashboard, orders, products
 
-# Import side effect: ensure models are registered on the metadata before
-# create_all runs.
-from app import models  # noqa: F401
+from app import models
 
 app = FastAPI(
     title="Inventory & Order Management API",
